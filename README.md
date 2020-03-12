@@ -50,12 +50,26 @@ const response = await fetch('/graphql', {
 const { data } = await response.json()
 ```
 
+## How does it work
+
+By loading a representation of the backend GraphQL schema into
+memory, the library is able to infer the GraphQL type of a
+variable by their placement within the query string.
+
+The library first replaces expressions in the template literal
+with placeholder variable names (i.e. `$arg0`, `$arg1`,
+`$argN`...). It then parses the query string and traverses the
+query AST. Every time a placeholder variable is found it looks
+up the relevant GraphQL type and saves the variable name and
+type for later. Saved variables are then inserted at into the
+operation definition at the root of the query.
+
 ## Caveats
 
-For this library to work it needs to load a representation of the
-backend GraphQL schema into memory. This can be performed
-automatically by running an introspection query against the GraphQL
-API endpoint but for anything but a small schema will result in
+This library needs to load full a representation of the backend
+GraphQL schema into memory. This can be performed automatically
+by running an introspection query against the GraphQL API
+endpoint but for anything but a small schema will result in
 an expensive network request, high memory usage, and increased load
 on the backend.
 
